@@ -1,0 +1,9 @@
+RewriteEngine On
+
+# Jika file/folder yang diminta memang ada (misal asset), langsung serve
+RewriteCond %{REQUEST_FILENAME} -f [OR]
+RewriteCond %{REQUEST_FILENAME} -d
+RewriteRule ^ - [L]
+
+# Selain itu, semua request diarahkan ke gerbang tunggal index.php
+RewriteRule ^ index.php [L]

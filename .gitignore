@@ -1,0 +1,8 @@
+.env
+database/*.sqlite
+public/assets/uploads/covers/*
+public/assets/uploads/bukti/*
+!public/assets/uploads/covers/.gitkeep
+!public/assets/uploads/bukti/.gitkeep
+.DS_Store
+Thumbs.db
