@@ -43,7 +43,7 @@ $isActive = fn(string $path) => str_starts_with($currentPath, ltrim($path, '/'))
         <?php else: ?>
             <p class="px-3 pt-2 pb-1 text-[10px] uppercase text-slate-600 tracking-widest">Menu Anggota</p>
             <a href="<?= url('/katalog') ?>" class="flex items-center gap-2 px-3 py-2 rounded-lg <?= $isActive('katalog') ?>">Katalog Buku</a>
-            <a href="<?= url('/riwayat') ?>" class="flex items-center gap-2 px-3 py-2 rounded-lg <?= $isActive('riwayat') ?>">Riwayat Peminjaman</a>
+            <a href="<?= url('/riwayat') ?>" class="flex items-center gap-2 px-3 py-2 rounded-lg <?= $isActive('riwayat') ?>">Riwayat Saya</a>
             <a href="<?= url('/ebook') ?>" class="flex items-center gap-2 px-3 py-2 rounded-lg <?= $isActive('ebook') ?>">eBook Store</a>
         <?php endif; ?>
     </nav>

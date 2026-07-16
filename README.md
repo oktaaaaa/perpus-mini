@@ -124,7 +124,7 @@ Anggota baru juga bisa mendaftar mandiri lewat halaman **Daftar Gratis**
 
 **Member**
 - Katalog Buku (cari & filter kategori, ajukan pinjam)
-- Riwayat Peminjaman
+- Riwayat 
 - eBook Store (beli eBook dengan upload bukti pembayaran)
 
 **Keamanan & Validasi**

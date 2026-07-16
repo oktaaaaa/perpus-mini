@@ -24,16 +24,16 @@ class PembelianEbook extends Model
         }
     }
 
-    public function milikUser(int $userId): array
-    {
-        $stmt = $this->db->prepare(
-            "SELECT pembelian_ebook.*, buku.judul AS buku_judul, buku.ebook_file AS file
-             FROM pembelian_ebook JOIN buku ON buku.id = pembelian_ebook.buku_id
-             WHERE pembelian_ebook.user_id = :uid ORDER BY pembelian_ebook.created_at DESC"
-        );
-        $stmt->execute(['uid' => $userId]);
-        return $stmt->fetchAll();
-    }
+  public function milikUser(int $userId): array
+{
+    $stmt = $this->db->prepare(
+        "SELECT pembelian_ebook.*, buku.judul AS buku_judul, buku.cover AS buku_cover, buku.ebook_file AS file
+         FROM pembelian_ebook JOIN buku ON buku.id = pembelian_ebook.buku_id
+         WHERE pembelian_ebook.user_id = :uid ORDER BY pembelian_ebook.created_at DESC"
+    );
+    $stmt->execute(['uid' => $userId]);
+    return $stmt->fetchAll();
+}
 
     public function sudahBeli(int $userId, int $bukuId): bool
     {

@@ -1,8 +1,22 @@
 <?php $title = 'Pengembalian Buku'; ?>
 
-<div class="mb-5 px-4 py-3 rounded-lg bg-amber-500/10 border border-amber-500/30 text-amber-300 text-sm">
-    <strong>Sistem Denda:</strong> Denda keterlambatan (<?= rupiah(DENDA_PER_HARI) ?>/hari) otomatis dicatat saat klik "Terima Buku".
-    Untuk buku rusak atau hilang, klik tombol "Catat Denda" secara manual.
+<div class="mb-5 rounded-2xl border border-fuchsia-500/30 bg-gradient-to-r from-[#1a1028] via-[#241435] to-[#120b1f] px-5 py-4 text-sm text-fuchsia-100 shadow-lg shadow-fuchsia-950/20 backdrop-blur-md">
+    <div class="flex items-start gap-3">
+        <div class="mt-0.5 flex h-10 w-10 items-center justify-center rounded-xl bg-gradient-to-br from-fuchsia-500 to-pink-500 text-white shadow-md shadow-pink-500/30">
+            <span class="text-base font-bold">!</span>
+        </div>
+
+        <div class="leading-relaxed">
+            <strong class="block text-base text-pink-200 mb-1">Sistem Denda</strong>
+            <span class="text-fuchsia-100/90">
+                Denda keterlambatan (<?= rupiah(DENDA_PER_HARI) ?>/hari) otomatis dicatat saat klik
+                <span class="font-semibold text-pink-300">"Terima Buku"</span>.
+                Untuk buku rusak atau hilang, klik tombol
+                <span class="font-semibold text-violet-300">"Catat Denda"</span>
+                secara manual.
+            </span>
+        </div>
+    </div>
 </div>
 
 <div class="card overflow-hidden">
@@ -95,16 +109,44 @@
         <form method="POST" id="formDenda" class="space-y-3">
             <?= csrf_field() ?>
 
-            <select name="jenis"
-                class="w-full px-4 py-2.5 rounded-lg text-sm outline-none text-white"
-                style="background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.12);">
-                <option value="rusak">Buku Rusak</option>
-                <option value="hilang">Buku Hilang</option>
-            </select>
+            <input type="hidden" name="jenis" id="dendaJenis" value="rusak">
 
-            <input type="number" name="jumlah" required min="1" placeholder="Jumlah denda (Rp)"
-                class="w-full px-4 py-2.5 rounded-lg text-sm outline-none text-white placeholder-slate-500"
-                style="background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.12);">
+            <div class="grid grid-cols-2 gap-3">
+                <button type="button" id="optRusak" onclick="setDendaJenis('rusak')"
+                    class="relative flex items-start gap-3 p-3 rounded-lg text-left hover:shadow-md transition-transform duration-200 transform"
+                    aria-pressed="false"
+                    style="background: linear-gradient(135deg,#fef3c7,#f59e0b); border:1px solid rgba(245,158,11,0.12);">
+                    <div class="w-10 h-10 rounded-md flex items-center justify-center bg-white/10 text-amber-700">
+                        <i class="ti ti-wrench text-xl"></i>
+                    </div>
+                    <div>
+                        <div class="font-medium text-sm text-amber-900">Buku Rusak</div>
+                        <div class="text-xs text-amber-800/80">Kerusakan ringan sampai sedang. Isi jumlah denda sesuai kondisi.</div>
+                    </div>
+                    <span id="checkRusak" class="absolute top-3 right-3 hidden w-6 h-6 rounded-full bg-white/90 text-amber-700 flex items-center justify-center text-[0.85rem]">✓</span>
+                </button>
+
+                <button type="button" id="optHilang" onclick="setDendaJenis('hilang')"
+                    class="relative flex items-start gap-3 p-3 rounded-lg text-left hover:shadow-md transition-transform duration-200 transform"
+                    aria-pressed="false"
+                    style="background: linear-gradient(135deg,#fee2e2,#ef4444); border:1px solid rgba(239,68,68,0.12);">
+                    <div class="w-10 h-10 rounded-md flex items-center justify-center bg-white/10 text-rose-700">
+                        <i class="ti ti-package text-xl"></i>
+                    </div>
+                    <div>
+                        <div class="font-medium text-sm text-rose-900">Buku Hilang</div>
+                        <div class="text-xs text-rose-800/80">Buku tidak kembali/kehilangan. Rekomendasi denda lebih tinggi.</div>
+                    </div>
+                    <span id="checkHilang" class="absolute top-3 right-3 hidden w-6 h-6 rounded-full bg-white/90 text-rose-700 flex items-center justify-center text-[0.85rem]">✓</span>
+                </button>
+            </div>
+
+            <div class="pt-2">
+                <input type="number" name="jumlah" id="dendaJumlah" required min="1" placeholder="Jumlah denda (Rp)"
+                    class="w-full px-4 py-2.5 rounded-lg text-sm outline-none text-white placeholder-slate-500"
+                    style="background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.12);">
+                <p class="text-xs text-slate-400 mt-2">Saran: <span id="saranJumlah" class="font-medium">Rp50.000</span></p>
+            </div>
 
             <input type="text" name="keterangan" placeholder="Keterangan (opsional)"
                 class="w-full px-4 py-2.5 rounded-lg text-sm outline-none text-white placeholder-slate-500"
@@ -140,4 +182,37 @@ function catatDenda(id, judulBuku) {
     document.getElementById('dendaJudulBuku').textContent = judulBuku;
     document.getElementById('modalDenda').classList.remove('hidden');
 }
+
+function setDendaJenis(type) {
+    const jenis = document.getElementById('dendaJenis');
+    const rusak = document.getElementById('optRusak');
+    const hilang = document.getElementById('optHilang');
+    const jumlah = document.getElementById('dendaJumlah');
+    const saran = document.getElementById('saranJumlah');
+
+    jenis.value = type;
+    if (type === 'rusak') {
+        rusak.classList.add('ring-2','ring-amber-400','scale-105','shadow-2xl');
+        rusak.setAttribute('aria-pressed','true');
+        hilang.classList.remove('ring-2','ring-rose-400','scale-105','shadow-2xl');
+        hilang.setAttribute('aria-pressed','false');
+        document.getElementById('checkRusak').classList.remove('hidden');
+        document.getElementById('checkHilang').classList.add('hidden');
+        jumlah.placeholder = 'Contoh: 50000';
+        saran.textContent = 'Rp50.000';
+    } else {
+        hilang.classList.add('ring-2','ring-rose-400','scale-105','shadow-2xl');
+        hilang.setAttribute('aria-pressed','true');
+        rusak.classList.remove('ring-2','ring-amber-400','scale-105','shadow-2xl');
+        rusak.setAttribute('aria-pressed','false');
+        document.getElementById('checkHilang').classList.remove('hidden');
+        document.getElementById('checkRusak').classList.add('hidden');
+        jumlah.placeholder = 'Contoh: 150000';
+        saran.textContent = 'Rp150.000';
+    }
+}
+
+document.addEventListener('DOMContentLoaded', function () {
+    if (document.getElementById('optRusak')) setDendaJenis('rusak');
+});
 </script>

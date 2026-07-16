@@ -3,18 +3,55 @@ $title = 'Katalog Buku';
 use App\Core\Auth;
 ?>
 <div class="mb-5 px-4 py-3 rounded-lg bg-violet-500/10 border border-violet-500/30 text-violet-300 text-sm">
-    Anda sedang meminjam <strong><?= (int) $sedangDipinjam ?></strong> dari maksimal <strong><?= MAX_PINJAM_PER_ANGGOTA ?></strong> buku yang diizinkan.
+    Anda sedang meminjam <strong><?= (int) $sedangDipinjam ?></strong> buku aktif saat ini.
 </div>
 
-<form method="GET" class="flex flex-col md:flex-row gap-3 mb-6">
+<form method="GET" id="formFilterKatalog" class="flex flex-col md:flex-row gap-3 mb-6">
     <input type="text" name="q" value="<?= e($q ?? '') ?>" placeholder="Cari judul / penulis..."
         class="flex-1 px-4 py-2.5 rounded-lg bg-white/5 border border-white/10 text-sm outline-none focus:border-violet-500">
-    <select name="kategori_id" onchange="this.form.submit()" class="px-4 py-2.5 rounded-lg bg-white/5 border border-white/10 text-sm outline-none">
-        <option value="">Semua Kategori</option>
-        <?php foreach ($kategori as $k): ?>
-            <option value="<?= $k['id'] ?>" <?= ($kategoriId == $k['id']) ? 'selected' : '' ?>><?= e($k['nama']) ?></option>
-        <?php endforeach; ?>
-    </select>
+
+    <!-- Dropdown Kategori Custom -->
+    <div class="relative w-full md:w-56" id="dropdownKategoriWrap">
+        <button type="button" onclick="toggleDropdownKategori()"
+            id="dropdownKategoriBtn"
+            class="w-full flex items-center justify-between px-4 py-2.5 rounded-lg text-sm text-white text-left"
+            style="background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.12);">
+            <span id="dropdownKategoriLabel">
+                <?php
+                    $labelAwal = 'Semua Kategori';
+                    foreach ($kategori as $k) {
+                        if ((string) $k['id'] === (string) ($kategoriId ?? '')) {
+                            $labelAwal = $k['nama'];
+                            break;
+                        }
+                    }
+                    echo e($labelAwal);
+                ?>
+            </span>
+            <i class="ti ti-chevron-down text-xs text-slate-400 transition-transform" id="dropdownKategoriIcon"></i>
+        </button>
+
+        <div id="dropdownKategoriList"
+            class="hidden absolute left-0 right-0 mt-2 rounded-xl overflow-hidden z-40 max-h-72 overflow-y-auto"
+            style="background: linear-gradient(180deg, #1c1233 0%, #120c22 100%); border: 1px solid rgba(168,85,247,0.3); box-shadow: 0 20px 50px rgba(0,0,0,0.5);">
+
+            <button type="button" onclick="pilihKategori(this, '', 'Semua Kategori')"
+                class="kategori-opsi w-full text-left px-4 py-2.5 text-sm transition-colors <?= empty($kategoriId) ? 'text-white font-medium' : 'text-slate-300 hover:bg-white/5' ?>"
+                <?= empty($kategoriId) ? 'style="background: linear-gradient(135deg, #a855f7 0%, #ec4899 100%);"' : '' ?>>
+                Semua Kategori
+            </button>
+
+            <?php foreach ($kategori as $k): $aktif = (string) $k['id'] === (string) ($kategoriId ?? ''); ?>
+            <button type="button" onclick="pilihKategori(this, '<?= (int) $k['id'] ?>', '<?= e(addslashes($k['nama'])) ?>')"
+                class="kategori-opsi w-full text-left px-4 py-2.5 text-sm transition-colors <?= $aktif ? 'text-white font-medium' : 'text-slate-300 hover:bg-white/5' ?>"
+                <?= $aktif ? 'style="background: linear-gradient(135deg, #a855f7 0%, #ec4899 100%);"' : '' ?>>
+                <?= e($k['nama']) ?>
+            </button>
+            <?php endforeach; ?>
+        </div>
+    </div>
+    <input type="hidden" name="kategori_id" id="dropdownKategoriValue" value="<?= e($kategoriId ?? '') ?>">
+
     <button class="px-5 py-2.5 rounded-lg btn-primary text-white text-sm">Cari</button>
 </form>
 
@@ -54,3 +91,29 @@ use App\Core\Auth;
     <?php endforeach; ?>
 </div>
 <?php endif; ?>
+
+<script>
+function toggleDropdownKategori() {
+    const list = document.getElementById('dropdownKategoriList');
+    const icon = document.getElementById('dropdownKategoriIcon');
+    list.classList.toggle('hidden');
+    icon.classList.toggle('rotate-180');
+}
+
+function pilihKategori(el, id, nama) {
+    document.getElementById('dropdownKategoriLabel').textContent = nama;
+    document.getElementById('dropdownKategoriValue').value = id;
+
+    // Auto-submit, sama seperti onchange="this.form.submit()" di select aslinya
+    document.getElementById('formFilterKatalog').submit();
+}
+
+// Tutup dropdown kalau klik di luar area
+document.addEventListener('click', function (e) {
+    const wrap = document.getElementById('dropdownKategoriWrap');
+    if (wrap && !wrap.contains(e.target)) {
+        document.getElementById('dropdownKategoriList').classList.add('hidden');
+        document.getElementById('dropdownKategoriIcon').classList.remove('rotate-180');
+    }
+});
+</script>

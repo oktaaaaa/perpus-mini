@@ -38,11 +38,6 @@ class PeminjamanController extends Controller
             $this->redirect('/katalog');
         }
 
-        if ($peminjamanModel->hitungSedangDipinjam($userId) >= MAX_PINJAM_PER_ANGGOTA) {
-            $this->flash('error', 'Anda sudah mencapai batas maksimal ' . MAX_PINJAM_PER_ANGGOTA . ' buku dipinjam bersamaan.');
-            $this->redirect('/katalog');
-        }
-
         if ($peminjamanModel->sudahMengajukan($userId, $bukuId)) {
             $this->flash('error', 'Anda sudah mengajukan/meminjam buku ini.');
             $this->redirect('/katalog');

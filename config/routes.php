@@ -15,10 +15,7 @@ use App\Controllers\ProfilController;
 use App\Core\Router;
 
 /** @var Router $router */
-$router->get('/admin/ebook/bukti/{id}', [
-    \App\Controllers\EbookController::class,
-    'bukti'
-]);
+
 // ------------------------------------------------------------
 // Publik
 // ------------------------------------------------------------

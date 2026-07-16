@@ -27,13 +27,51 @@ $action = $buku ? url('/admin/buku/' . $buku['id']) : url('/admin/buku');
         <div class="grid md:grid-cols-4 gap-4">
             <div>
                 <label class="text-xs text-slate-400">Kategori</label>
-                <select name="kategori_id" class="w-full mt-1 px-4 py-2.5 rounded-lg bg-white/5 border border-white/10 text-sm outline-none focus:border-violet-500">
-                    <option value="">-- Tanpa Kategori --</option>
-                    <?php foreach ($kategori as $k): ?>
-                        <option value="<?= $k['id'] ?>" <?= (($buku['kategori_id'] ?? null) == $k['id']) ? 'selected' : '' ?>><?= e($k['nama']) ?></option>
-                    <?php endforeach; ?>
-                </select>
+
+                <div class="relative mt-1" id="dropdownKategoriBukuWrap">
+                    <button type="button" onclick="toggleDropdownKategoriBuku()"
+                        class="w-full flex items-center justify-between px-4 py-2.5 rounded-lg text-sm text-white text-left"
+                        style="background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.12);">
+                        <span id="dropdownKategoriBukuLabel">
+                            <?php
+                                $labelAwal = '-- Tanpa Kategori --';
+                                foreach ($kategori as $k) {
+                                    if (!empty($buku) && (string) $k['id'] === (string) ($buku['kategori_id'] ?? '')) {
+                                        $labelAwal = $k['nama'];
+                                        break;
+                                    }
+                                }
+                                echo e($labelAwal);
+                            ?>
+                        </span>
+                        <i class="ti ti-chevron-down text-xs text-slate-400 transition-transform" id="dropdownKategoriBukuIcon"></i>
+                    </button>
+
+                    <div id="dropdownKategoriBukuList"
+                        class="hidden absolute left-0 right-0 mt-2 rounded-xl overflow-hidden z-40 max-h-64 overflow-y-auto"
+                        style="background: linear-gradient(180deg, #1c1233 0%, #120c22 100%); border: 1px solid rgba(168,85,247,0.3); box-shadow: 0 20px 50px rgba(0,0,0,0.5);">
+
+                        <?php $tanpaKategori = empty($buku['kategori_id']); ?>
+                        <button type="button" onclick="pilihKategoriBuku(this, '', '-- Tanpa Kategori --')"
+                            class="kategori-buku-opsi w-full flex items-center justify-between px-4 py-2.5 text-sm transition-colors <?= $tanpaKategori ? 'text-white font-medium' : 'text-slate-300 hover:bg-white/5' ?>"
+                            <?= $tanpaKategori ? 'style="background: linear-gradient(135deg, #a855f7 0%, #ec4899 100%);"' : '' ?>>
+                            <span>-- Tanpa Kategori --</span>
+                            <i class="ti ti-check text-sm <?= $tanpaKategori ? '' : 'hidden' ?>"></i>
+                        </button>
+
+                        <?php foreach ($kategori as $k): $aktif = !empty($buku) && (string) $k['id'] === (string) ($buku['kategori_id'] ?? ''); ?>
+                        <button type="button" onclick="pilihKategoriBuku(this, '<?= (int) $k['id'] ?>', '<?= e(addslashes($k['nama'])) ?>')"
+                            class="kategori-buku-opsi w-full flex items-center justify-between px-4 py-2.5 text-sm transition-colors <?= $aktif ? 'text-white font-medium' : 'text-slate-300 hover:bg-white/5' ?>"
+                            <?= $aktif ? 'style="background: linear-gradient(135deg, #a855f7 0%, #ec4899 100%);"' : '' ?>>
+                            <span><?= e($k['nama']) ?></span>
+                            <i class="ti ti-check text-sm <?= $aktif ? '' : 'hidden' ?>"></i>
+                        </button>
+                        <?php endforeach; ?>
+                    </div>
+                </div>
+                <input type="hidden" name="kategori_id" id="kategoriBukuValue" value="<?= e($buku['kategori_id'] ?? '') ?>">
             </div>
+
             <div>
                 <label class="text-xs text-slate-400">Stok Fisik</label>
                 <input type="number" name="stok" min="0" required value="<?= e((string) ($buku['stok'] ?? 0)) ?>"
@@ -72,3 +110,34 @@ $action = $buku ? url('/admin/buku/' . $buku['id']) : url('/admin/buku');
         </div>
     </form>
 </div>
+
+<script>
+function toggleDropdownKategoriBuku() {
+    document.getElementById('dropdownKategoriBukuList').classList.toggle('hidden');
+    document.getElementById('dropdownKategoriBukuIcon').classList.toggle('rotate-180');
+}
+
+function pilihKategoriBuku(el, id, nama) {
+    document.getElementById('dropdownKategoriBukuLabel').textContent = nama;
+    document.getElementById('kategoriBukuValue').value = id;
+    document.getElementById('dropdownKategoriBukuList').classList.add('hidden');
+    document.getElementById('dropdownKategoriBukuIcon').classList.remove('rotate-180');
+
+    document.querySelectorAll('.kategori-buku-opsi').forEach(opsi => {
+        opsi.style.background = '';
+        opsi.className = 'kategori-buku-opsi w-full flex items-center justify-between px-4 py-2.5 text-sm text-slate-300 hover:bg-white/5 transition-colors';
+        opsi.querySelector('i').classList.add('hidden');
+    });
+    el.style.background = 'linear-gradient(135deg, #a855f7 0%, #ec4899 100%)';
+    el.className = 'kategori-buku-opsi w-full flex items-center justify-between px-4 py-2.5 text-sm text-white font-medium';
+    el.querySelector('i').classList.remove('hidden');
+}
+
+document.addEventListener('click', function (e) {
+    const wrap = document.getElementById('dropdownKategoriBukuWrap');
+    if (wrap && !wrap.contains(e.target)) {
+        document.getElementById('dropdownKategoriBukuList').classList.add('hidden');
+        document.getElementById('dropdownKategoriBukuIcon').classList.remove('rotate-180');
+    }
+});
+</script>

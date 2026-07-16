@@ -37,8 +37,6 @@
         <div class="flex gap-3 mt-6">
             <?php if ($sudahMengajukan): ?>
                 <span class="px-5 py-2.5 rounded-lg bg-white/5 text-slate-500 text-sm">Sudah Diajukan/Dipinjam</span>
-            <?php elseif ($sedangDipinjam >= MAX_PINJAM_PER_ANGGOTA): ?>
-                <span class="px-5 py-2.5 rounded-lg bg-white/5 text-slate-500 text-sm">Batas Pinjam Tercapai</span>
             <?php elseif ($buku['stok'] < 1): ?>
                 <span class="px-5 py-2.5 rounded-lg bg-white/5 text-slate-500 text-sm">Stok Habis</span>
             <?php else: ?>

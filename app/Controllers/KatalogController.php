@@ -7,6 +7,8 @@ use App\Core\Controller;
 use App\Models\Buku;
 use App\Models\Kategori;
 use App\Models\Peminjaman;
+use App\Models\PembelianEbook;
+use App\Models\ProgresBaca;
 
 class KatalogController extends Controller
 {
@@ -30,14 +32,13 @@ class KatalogController extends Controller
         ]);
     }
 
-    /** Riwayat Saya milik member yang sedang login (peminjaman fisik + pembelian eBook) */
     /** Riwayat Saya milik member yang sedang login (pembelian, baca, peminjaman fisik) */
     public function riwayat(): void
     {
         Auth::requireMember();
         $peminjamanModel = new Peminjaman();
-        $pembelianModel = new \App\Models\PembelianEbook();
-        $progresModel = new \App\Models\ProgresBaca();
+        $pembelianModel = new PembelianEbook();
+        $progresModel = new ProgresBaca();
 
         $this->view('member/riwayat', [
             'transaksi'      => $pembelianModel->milikUser(Auth::id()),

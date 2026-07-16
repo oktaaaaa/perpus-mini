@@ -1,7 +1,7 @@
 <?php $title = 'Permintaan Peminjaman'; ?>
 
 <div class="mb-5 px-4 py-3 rounded-lg bg-violet-500/10 border border-violet-500/30 text-violet-300 text-sm">
-    Aturan sistem: Setiap anggota maksimal meminjam <?= MAX_PINJAM_PER_ANGGOTA ?> buku secara bersamaan.
+    Aturan sistem: Anggota dapat mengajukan peminjaman buku tanpa batas maksimal jumlah, selama stok tersedia.
     Saat menyetujui, Anda dapat mengatur durasi peminjaman secara fleksibel.
 </div>
 

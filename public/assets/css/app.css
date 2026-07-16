@@ -47,3 +47,20 @@ table.data th {
     letter-spacing: .05em;
     color: #6b7280;
 }
+.jenis-card{
+    transition:.25s;
+}
+
+.jenis-card:hover{
+    transform:translateY(-2px);
+}
+
+.jenis-card:has(input:checked){
+    border:2px solid #d946ef;
+    background:linear-gradient(
+        135deg,
+        rgba(139,92,246,.25),
+        rgba(236,72,153,.20)
+    );
+    box-shadow:0 0 25px rgba(217,70,239,.25);
+}

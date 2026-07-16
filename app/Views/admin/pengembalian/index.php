@@ -1,8 +1,22 @@
 <?php $title = 'Pengembalian Buku'; ?>
 
-<div class="mb-5 px-4 py-3 rounded-lg bg-amber-500/10 border border-amber-500/30 text-amber-300 text-sm">
-    <strong>Sistem Denda:</strong> Denda keterlambatan (<?= rupiah(DENDA_PER_HARI) ?>/hari) otomatis dicatat saat klik "Terima Buku".
-    Untuk buku rusak atau hilang, klik tombol "Catat Denda" secara manual.
+<div class="mb-5 px-4 py-4 rounded-2xl border border-fuchsia-500/30 bg-gradient-to-r from-[#1a1028] via-[#251437] to-[#120b1f] text-fuchsia-100 shadow-lg shadow-fuchsia-950/20 backdrop-blur-md">
+    <div class="flex items-start gap-3">
+        <div class="mt-1 h-10 w-10 shrink-0 rounded-xl bg-gradient-to-br from-fuchsia-500 to-pink-500 flex items-center justify-center shadow-md shadow-fuchsia-500/30">
+            <span class="text-white text-lg">!</span>
+        </div>
+
+        <div class="text-sm leading-relaxed">
+            <strong class="block text-base text-pink-200 mb-1">Sistem Denda</strong>
+            <p class="text-fuchsia-100/90">
+                Denda keterlambatan (<?= rupiah(DENDA_PER_HARI) ?>/hari) otomatis dicatat saat klik
+                <span class="font-semibold text-pink-300">"Terima Buku"</span>.
+                Untuk buku rusak atau hilang, klik tombol
+                <span class="font-semibold text-violet-300">"Catat Denda"</span>
+                secara manual.
+            </p>
+        </div>
+    </div>
 </div>
 
 <div class="card overflow-hidden">
@@ -40,40 +54,19 @@
                     <button type="button"
                         onclick="terimaPengembalian(<?= (int) $p['id'] ?>, '<?= e(addslashes($p['buku_judul'])) ?>')"
                         class="text-xs px-3 py-1.5 rounded-lg bg-emerald-500/10 border border-emerald-500/30 text-emerald-400 hover:bg-emerald-500/20">Terima Buku</button>
-                    <button onclick="document.getElementById('modalDenda<?= $p['id'] ?>').classList.remove('hidden')"
+                    <button type="button"
+                        onclick="catatDenda(<?= (int) $p['id'] ?>, '<?= e(addslashes($p['buku_judul'])) ?>')"
                         class="text-xs px-3 py-1.5 rounded-lg border border-amber-500/30 text-amber-400 hover:bg-amber-500/10">Catat Denda</button>
                 </td>
             </tr>
-
-            <div id="modalDenda<?= $p['id'] ?>" class="hidden fixed inset-0 bg-black/60 flex items-center justify-center px-4 z-50">
-                <div class="card p-6 w-full max-w-sm">
-                    <p class="text-white font-medium mb-4">Catat Denda &mdash; <?= e($p['buku_judul']) ?></p>
-                    <form method="POST" action="<?= url('/admin/pengembalian/' . $p['id'] . '/denda') ?>" class="space-y-3">
-                        <?= csrf_field() ?>
-                        <select name="jenis" class="w-full px-4 py-2.5 rounded-lg bg-white/5 border border-white/10 text-sm outline-none">
-                            <option value="rusak">Buku Rusak</option>
-                            <option value="hilang">Buku Hilang</option>
-                        </select>
-                        <input type="number" name="jumlah" required min="1" placeholder="Jumlah denda (Rp)"
-                            class="w-full px-4 py-2.5 rounded-lg bg-white/5 border border-white/10 text-sm outline-none">
-                        <input type="text" name="keterangan" placeholder="Keterangan (opsional)"
-                            class="w-full px-4 py-2.5 rounded-lg bg-white/5 border border-white/10 text-sm outline-none">
-                        <div class="flex gap-2 pt-1">
-                            <button class="flex-1 py-2 rounded-lg btn-primary text-white text-sm">Simpan</button>
-                            <button type="button" onclick="document.getElementById('modalDenda<?= $p['id'] ?>').classList.add('hidden')"
-                                class="flex-1 py-2 rounded-lg border border-white/10 text-sm">Batal</button>
-                        </div>
-                    </form>
-                </div>
-            </div>
         <?php endforeach; endif; ?>
         </tbody>
     </table>
 </div>
 
-<!-- Modal Terima Pengembalian (satu modal dipakai ulang utk semua baris) -->
-<div id="modalTerima" class="hidden fixed inset-0 bg-black/60 flex items-center justify-center px-4 z-50">
-    <div class="w-full max-w-sm rounded-2xl border border-emerald-500/30 p-6"
+<!-- Modal Terima Pengembalian -->
+<div id="modalTerima" class="hidden fixed inset-0 bg-black/60 flex items-center justify-center px-4 py-8 z-50 overflow-y-auto">
+    <div class="w-full max-w-sm rounded-2xl border border-emerald-500/30 p-6 max-h-[85vh] overflow-y-auto"
         style="background: linear-gradient(180deg, #1c1233 0%, #120c22 100%); box-shadow: 0 20px 60px rgba(0,0,0,0.5);">
 
         <div class="w-14 h-14 rounded-full flex items-center justify-center mx-auto mb-4"
@@ -101,10 +94,128 @@
     </div>
 </div>
 
+<!-- Modal Catat Denda -->
+<div id="modalDenda" class="hidden fixed inset-0 bg-black/60 flex items-center justify-center px-4 py-8 z-50 overflow-y-auto">
+    <div class="w-full max-w-sm rounded-2xl border border-violet-500/30 p-6 max-h-[85vh] overflow-y-auto"
+        style="background: linear-gradient(180deg, #1c1233 0%, #120c22 100%); box-shadow: 0 20px 60px rgba(0,0,0,0.5);">
+
+        <div class="w-14 h-14 rounded-full flex items-center justify-center mx-auto mb-4"
+            style="background: linear-gradient(135deg, #a855f7 0%, #ec4899 100%); box-shadow: 0 8px 24px rgba(168,85,247,0.35);">
+            <i class="ti ti-alert-triangle text-2xl text-white"></i>
+        </div>
+
+        <p class="text-white font-medium text-center mb-1">Catat Denda</p>
+        <p class="text-xs text-center mb-5" style="color:#b9aed6;" id="dendaJudulBuku"></p>
+
+        <form method="POST" id="formDenda" class="space-y-3">
+            <?= csrf_field() ?>
+
+            <!-- Dropdown Jenis Denda Custom -->
+            <div class="relative" id="dropdownJenisWrap">
+                <button type="button" onclick="toggleDropdownJenis()"
+                    class="w-full flex items-center justify-between px-4 py-2.5 rounded-lg text-sm text-white text-left"
+                    style="background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.12);">
+                    <span id="dropdownJenisLabel">Buku Rusak</span>
+                    <i class="ti ti-chevron-down text-xs text-slate-400 transition-transform" id="dropdownJenisIcon"></i>
+                </button>
+
+                <div id="dropdownJenisList"
+                    class="hidden absolute left-0 right-0 mt-2 rounded-xl overflow-hidden z-40"
+                    style="background: linear-gradient(180deg, #1c1233 0%, #120c22 100%); border: 1px solid rgba(168,85,247,0.3); box-shadow: 0 20px 50px rgba(0,0,0,0.5);">
+
+                    <button type="button" onclick="pilihJenis('rusak', 'Buku Rusak')"
+                        id="opsiRusak"
+                        class="w-full flex items-center justify-between px-4 py-2.5 text-sm text-white font-medium"
+                        style="background: linear-gradient(135deg, #a855f7 0%, #ec4899 100%);">
+                        <span>Buku Rusak</span>
+                        <i class="ti ti-check text-sm" id="checkRusak"></i>
+                    </button>
+                    <button type="button" onclick="pilihJenis('hilang', 'Buku Hilang')"
+                        id="opsiHilang"
+                        class="w-full flex items-center justify-between px-4 py-2.5 text-sm text-slate-300 hover:bg-white/5 transition-colors">
+                        <span>Buku Hilang</span>
+                        <i class="ti ti-check text-sm hidden" id="checkHilang"></i>
+                    </button>
+                </div>
+            </div>
+            <input type="hidden" name="jenis" id="dendaJenisValue" value="rusak">
+
+            <input type="number" name="jumlah" required min="1" placeholder="Jumlah denda (Rp)"
+                class="w-full px-4 py-2.5 rounded-lg text-sm outline-none text-white placeholder-slate-500"
+                style="background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.12);">
+
+            <input type="text" name="keterangan" placeholder="Keterangan (opsional)"
+                class="w-full px-4 py-2.5 rounded-lg text-sm outline-none text-white placeholder-slate-500"
+                style="background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.12);">
+
+            <div class="flex gap-2 pt-1">
+                <button type="submit"
+                    class="flex-1 py-2.5 rounded-lg text-white text-sm font-semibold"
+                    style="background: linear-gradient(135deg, #a855f7 0%, #ec4899 100%); box-shadow: 0 6px 18px rgba(168,85,247,0.35);">
+                    Simpan
+                </button>
+                <button type="button" onclick="document.getElementById('modalDenda').classList.add('hidden')"
+                    class="flex-1 py-2.5 rounded-lg border border-white/10 text-sm text-slate-300 hover:bg-white/5">
+                    Batal
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+
 <script>
 function terimaPengembalian(id, judulBuku) {
     document.getElementById('formTerima').action = '<?= url('/admin/pengembalian') ?>' + '/' + id + '/terima';
     document.getElementById('terimaJudulBuku').textContent = '"' + judulBuku + '"';
     document.getElementById('modalTerima').classList.remove('hidden');
 }
+
+function catatDenda(id, judulBuku) {
+    document.getElementById('formDenda').action = '<?= url('/admin/pengembalian') ?>' + '/' + id + '/denda';
+    document.getElementById('dendaJudulBuku').textContent = judulBuku;
+    pilihJenis('rusak', 'Buku Rusak');
+    document.getElementById('modalDenda').classList.remove('hidden');
+}
+
+function toggleDropdownJenis() {
+    document.getElementById('dropdownJenisList').classList.toggle('hidden');
+    document.getElementById('dropdownJenisIcon').classList.toggle('rotate-180');
+}
+
+function pilihJenis(value, label) {
+    document.getElementById('dropdownJenisLabel').textContent = label;
+    document.getElementById('dendaJenisValue').value = value;
+    document.getElementById('dropdownJenisList').classList.add('hidden');
+    document.getElementById('dropdownJenisIcon').classList.remove('rotate-180');
+
+    const rusak = document.getElementById('opsiRusak');
+    const hilang = document.getElementById('opsiHilang');
+    const checkRusak = document.getElementById('checkRusak');
+    const checkHilang = document.getElementById('checkHilang');
+    const aktif = 'linear-gradient(135deg, #a855f7 0%, #ec4899 100%)';
+
+    if (value === 'rusak') {
+        rusak.style.background = aktif;
+        rusak.className = 'w-full flex items-center justify-between px-4 py-2.5 text-sm text-white font-medium';
+        hilang.style.background = '';
+        hilang.className = 'w-full flex items-center justify-between px-4 py-2.5 text-sm text-slate-300 hover:bg-white/5 transition-colors';
+        checkRusak.classList.remove('hidden');
+        checkHilang.classList.add('hidden');
+    } else {
+        hilang.style.background = aktif;
+        hilang.className = 'w-full flex items-center justify-between px-4 py-2.5 text-sm text-white font-medium';
+        rusak.style.background = '';
+        rusak.className = 'w-full flex items-center justify-between px-4 py-2.5 text-sm text-slate-300 hover:bg-white/5 transition-colors';
+        checkHilang.classList.remove('hidden');
+        checkRusak.classList.add('hidden');
+    }
+}
+
+document.addEventListener('click', function (e) {
+    const wrap = document.getElementById('dropdownJenisWrap');
+    if (wrap && !wrap.contains(e.target)) {
+        document.getElementById('dropdownJenisList').classList.add('hidden');
+        document.getElementById('dropdownJenisIcon').classList.remove('rotate-180');
+    }
+});
 </script>

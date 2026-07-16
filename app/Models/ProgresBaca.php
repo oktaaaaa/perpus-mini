@@ -9,12 +9,12 @@ class ProgresBaca extends Model
 {
     protected string $table = 'progres_baca';
 
-    /** Daftar riwayat baca milik 1 user, join ke buku untuk judul & penulis */
+    /** Daftar riwayat baca milik 1 user, join ke buku untuk judul, penulis & cover */
     public function milikUser(int $userId): array
     {
         try {
             $stmt = $this->db->prepare(
-                "SELECT progres_baca.*, buku.judul AS buku_judul, buku.penulis AS buku_penulis
+                "SELECT progres_baca.*, buku.judul AS buku_judul, buku.penulis AS buku_penulis, buku.cover AS buku_cover
                  FROM progres_baca
                  JOIN buku ON buku.id = progres_baca.buku_id
                  WHERE progres_baca.user_id = :uid

@@ -49,7 +49,7 @@ define('DB_PASS', env('DB_PASS', ''));
 define('DB_SQLITE_PATH', env('DB_SQLITE_PATH', BASE_PATH . '/database/perpus_mini.sqlite'));
 
 // Aturan bisnis
-define('MAX_PINJAM_PER_ANGGOTA', 3);   // maksimal buku dipinjam bersamaan
+// define('MAX_PINJAM_PER_ANGGOTA', 3);   // maksimal buku dipinjam bersamaan
 define('LAMA_PINJAM_HARI', 7);         // default lama peminjaman
 define('DENDA_PER_HARI', 1000);        // Rp per hari keterlambatan
 

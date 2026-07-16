@@ -95,4 +95,22 @@ class Peminjaman extends Model
         }
         return $result;
     }
+
+    /** Member menandai bahwa buku sudah/akan dikembalikan, menunggu verifikasi admin */
+    public function ajukanKembali(int $id, int $userId): bool
+    {
+        $stmt = $this->db->prepare(
+            "UPDATE peminjaman SET diajukan_kembali = 1
+             WHERE id = :id AND user_id = :uid AND status = 'dipinjam'"
+        );
+        return $stmt->execute(['id' => $id, 'uid' => $userId]);
+    }
+
+    public function countDiajukanKembali(): int
+    {
+        $stmt = $this->db->query(
+            "SELECT COUNT(*) FROM peminjaman WHERE status = 'dipinjam' AND diajukan_kembali = 1"
+        );
+        return (int) $stmt->fetchColumn();
+    }
 }
