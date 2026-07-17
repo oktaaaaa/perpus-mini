@@ -40,26 +40,7 @@ perpus-mini/
 └─ README.md
 ```
 
-## 3. Panduan Instalasi Lokal (XAMPP / Laragon)
-
-### a. Clone / Salin project
-
-Letakkan folder ini di dalam `htdocs` (XAMPP) atau `www` (Laragon), misalnya:
-`C:\xampp\htdocs\perpus-mini`
-
-### b. Buat database
-
-1. Buka phpMyAdmin, buat database baru **atau** langsung import
-   `database/schema.sql` (query di dalamnya sudah termasuk `CREATE DATABASE`).
-2. Import juga `database/seed.sql` untuk mengisi data sampel (akun login,
-   kategori, dan buku contoh).
-
-```bash
-mysql -u root -p < database/schema.sql
-mysql -u root -p perpus_mini < database/seed.sql
-```
-
-### c. Konfigurasi koneksi
+### 3. Konfigurasi Koneksi
 
 Salin `.env.example` menjadi `.env`, lalu sesuaikan:
 
@@ -75,28 +56,6 @@ DB_PASS=
 
 > Jika project diakses lewat sub-folder (misal `http://localhost/perpus-mini/public`),
 > biarkan `APP_URL` kosong — router otomatis mendeteksi sub-folder.
-
-### d. Arahkan Document Root ke folder `public/`
-
-- **XAMPP/Apache**: pastikan `mod_rewrite` aktif, lalu akses
-  `http://localhost/perpus-mini/public/`
-- **Laragon**: otomatis mendeteksi folder `public/` sebagai document root
-  jika menggunakan Virtual Host (disarankan), akses `http://perpus-mini.test/`
-
-### e. Pastikan folder upload bisa ditulis
-
-Pastikan folder berikut memiliki izin tulis (write permission):
-
-```
-public/assets/uploads/covers/
-public/assets/uploads/bukti/
-```
-
-### f. Selesai! Buka di browser
-
-```
-http://localhost/perpus-mini/public/
-```
 
 ---
 
@@ -124,7 +83,7 @@ Anggota baru juga bisa mendaftar mandiri lewat halaman **Daftar Gratis**
 
 **Member**
 - Katalog Buku (cari & filter kategori, ajukan pinjam)
-- Riwayat 
+- Riwayat
 - eBook Store (beli eBook dengan upload bukti pembayaran)
 
 **Keamanan & Validasi**
@@ -136,20 +95,22 @@ Anggota baru juga bisa mendaftar mandiri lewat halaman **Daftar Gratis**
 - Try-catch di seluruh operasi database — error tidak pernah tampil mentah ke user
 - Upload file divalidasi ketat: maksimal 2MB, ekstensi & MIME type diperiksa
 
-## 6. Pembagian Tugas Anggota Kelompok
-
-> Isi bagian ini sesuai kontribusi nyata masing-masing anggota (silakan sunting):
-
-| Nama Anggota | NIM | Tugas / Modul yang Dikerjakan |
-|---|---|---|
-| _(isi nama)_ | _(isi NIM)_ | Arsitektur MVC, Auth & RBAC, modul Peminjaman-Pengembalian-Denda |
-| _(isi nama)_ | _(isi NIM)_ | Modul Buku, Kategori, Anggota, eBook Store, UI/Styling |
-
-Riwayat commit di GitHub digunakan sebagai bukti kontribusi masing-masing anggota.
-
-## 7. Aturan Bisnis Default (bisa diubah di `config/config.php`)
+## 6. Aturan Bisnis Default (bisa diubah di `config/config.php`)
 
 - Maksimal peminjaman bersamaan per anggota: **3 buku**
 - Lama pinjam default: **7 hari** (admin bisa ubah saat approve)
 - Tarif denda keterlambatan: **Rp 1.000/hari**
 - Maksimal ukuran file upload: **2MB**
+
+## 7. Tujuan Project
+
+Project ini dibuat sebagai UAS mata kuliah **Pemrograman Web Dinamis**, dengan tujuan menerapkan konsep **MVC** pada PHP Native serta membangun sistem perpustakaan mini secara digital — mulai dari pendataan buku, anggota, peminjaman, pengembalian, hingga perhitungan denda secara otomatis.
+
+## 8. Developer / Tim Pengembang
+
+| Nama | GitHub | Email |
+|------|--------|-------|
+| Okta Ramadani | [@oktaaaaa](https://github.com/oktaaaaa) | oktaramadany27@gmail.com |
+| Tika Aftasari SS | [@tikaaftasariss-coder](https://github.com/tikaaftasariss-coder) | tikaaftasari@gmail.com |
+
+**Program Studi Sistem Informasi — Universitas Merangin**
